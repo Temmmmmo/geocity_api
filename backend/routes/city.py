@@ -76,7 +76,7 @@ async def get_cities(
         return result
     sorted_cities: list[City] = sorted(
         City.query(session=db.session).all(),
-        key=lambda item: item.distance(longitude, latitude),
+        key=lambda item: item.distance_to(longitude, latitude),
     )
     for city in sorted_cities:
         result.append(
@@ -85,7 +85,7 @@ async def get_cities(
                 name=city.name,
                 longitude=city.longitude,
                 latitude=city.latitude,
-                distance=city.distance(longitude, latitude),
+                distance=city.distance_to(longitude, latitude),
             )
         )
         if len(result) == settings.NEAREST_CITY_COUNT:
@@ -93,8 +93,34 @@ async def get_cities(
     return result
 
 
-@city.delete("", response_model=StatusResponseModel)
-async def get_cities(city_id: int) -> StatusResponseModel:
+@city.get("/{city_id}", response_model=CityGet)
+async def get_city(
+    city_id: int,
+    longitude: Optional[Decimal] = None,
+    latitude: Optional[Decimal] = None,
+) -> CityGet:
+    """
+    Возвращает город по его идентификатору в базе данных.
+    Если одновременно переданы параметры longitude, latitude, то также вернет расстояние от данной точки до данного города
+    """
+    if longitude is None and latitude is not None:
+        raise MissingParameters("longitude")
+    if latitude is None and longitude is not None:
+        raise MissingParameters("latitude")
+    city: City = City.get(session=db.session, id=city_id)
+    if latitude is not None and longitude is not None:
+        return CityGet(
+            id=city.id,
+            name=city.name,
+            longitude=city.longitude,
+            latitude=city.latitude,
+            distance=city.distance_to(longitude, latitude),
+        )
+    return CityGet.model_validate(city)
+
+
+@city.delete("/{city_id}", response_model=StatusResponseModel)
+async def delete_cities(city_id: int) -> StatusResponseModel:
     """
     Удаляет город из базы данных по его id
     """

@@ -26,5 +26,5 @@ class City(BaseDbModel):
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     @hybrid_method
-    def distance(self, longitude: Decimal, latitude: Decimal) -> Decimal:
+    def distance_to(self, longitude: Decimal, latitude: Decimal) -> Decimal:
         return calculate_distance(latitude, longitude, self.latitude, self.longitude)

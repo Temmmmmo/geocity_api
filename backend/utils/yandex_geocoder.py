@@ -11,7 +11,7 @@ class YandexGeocoderSettings(Settings):
     YANDEX_GEOCODER_LANGUAGE: str = (
         "ru_RU"  # Возможные значения https://yandex.ru/dev/geocode/doc/ru/request
     )
-    YANDEX_GEOCODER_API_KEY: str
+    YANDEX_GEOCODER_API_KEY: str | None = None
 
 
 class YandexGeocoderAPI:
