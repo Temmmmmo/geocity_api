@@ -1,7 +1,9 @@
 import asyncio
+from decimal import Decimal
+
+from aiohttp import ClientSession
 
 from backend.routes.models.models import Coordinates
-from aiohttp import ClientSession
 from backend.settings import Settings
 
 
@@ -10,14 +12,14 @@ class YandexGeocoderSettings(Settings):
     YANDEX_GEOCODER_LANGUAGE: str = (
         "ru_RU"  # Возможные значения https://yandex.ru/dev/geocode/doc/ru/request
     )
-    YANDEX_GEOCODER_API_KEY: str = "6465a350-1068-4493-adc9-f3fd3c231481"
+    YANDEX_GEOCODER_API_KEY: str
 
 
 class YandexGeocoderAPI:
     settings = YandexGeocoderSettings()
 
     @classmethod
-    async def get_coordinates(cls, city_name: str) -> Coordinates:
+    async def get_coordinates(cls, city_name: str) -> Coordinates | None:
         query: dict = {
             "apikey": cls.settings.YANDEX_GEOCODER_API_KEY,
             "geocode": city_name,
@@ -44,5 +46,7 @@ class YandexGeocoderAPI:
                 )
                 if result_position:
                     return Coordinates(
-                        longitude=result_position[0], latitude=result_position[1]
+                        longitude=Decimal(result_position[0]),
+                        latitude=Decimal(result_position[1]),
                     )
+                return None

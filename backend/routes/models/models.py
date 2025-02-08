@@ -1,6 +1,8 @@
+from decimal import Decimal
+
 from backend.routes.models.base import Base
 
 
 class Coordinates(Base):
-    longitude: str  # Долгота
-    latitude: str  # Широта
+    longitude: Decimal  # Долгота
+    latitude: Decimal  # Широта
