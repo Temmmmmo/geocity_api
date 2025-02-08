@@ -9,3 +9,9 @@ class Base(BaseModel):
         return "{}({})".format(self.__class__.__name__, ", ".join(attrs))
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")
+
+
+class StatusResponseModel(Base):
+    status: str
+    message: str
+    ru: str

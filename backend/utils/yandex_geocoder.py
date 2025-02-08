@@ -1,9 +1,8 @@
-import asyncio
 from decimal import Decimal
 
 from aiohttp import ClientSession
 
-from backend.routes.models.models import Coordinates
+from backend.schemas.models import Coordinates
 from backend.settings import Settings
 
 
@@ -20,6 +19,7 @@ class YandexGeocoderAPI:
 
     @classmethod
     async def get_coordinates(cls, city_name: str) -> Coordinates | None:
+        """Возвращает координаты города по его названию. Если город с таким названием не найден, то возвращает None."""
         query: dict = {
             "apikey": cls.settings.YANDEX_GEOCODER_API_KEY,
             "geocode": city_name,
@@ -37,7 +37,9 @@ class YandexGeocoderAPI:
                     .get("GeoObjectCollection", {})
                     .get("featureMember", {})
                 )
-                most_relevant_position = all_positions[0]
+                if not all_positions:
+                    return None
+                most_relevant_position = list(reversed(all_positions)).pop()
                 result_position = (
                     most_relevant_position.get("GeoObject", {})
                     .get("Point", {})

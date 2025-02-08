@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_sqlalchemy import DBSessionMiddleware
 
 from backend import __version__
+from backend.routes.city import city
 from backend.settings import get_settings
 
 settings = get_settings()
@@ -21,10 +22,4 @@ app.add_middleware(
     engine_args={"pool_pre_ping": True, "isolation_level": "AUTOCOMMIT"},
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ALLOW_ORIGINS,
-    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
-    allow_methods=settings.CORS_ALLOW_METHODS,
-    allow_headers=settings.CORS_ALLOW_HEADERS,
-)
+app.include_router(city)
