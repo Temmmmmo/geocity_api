@@ -3,6 +3,7 @@ import logging
 from decimal import Decimal
 from typing import Annotated, Literal, Optional
 from uuid import UUID
+
 import aiohttp
 from auth_lib.fastapi import UnionAuth
 from fastapi import APIRouter, Query

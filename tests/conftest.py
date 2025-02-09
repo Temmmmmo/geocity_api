@@ -14,7 +14,9 @@ def client(mocker):
     user_mock = mocker.patch(
         "backend.utils.yandex_geocoder.YandexGeocoderAPI.get_coordinates"
     )
-    user_mock.return_value = OuterAPIPosition(longitude=50, latitude=40, outer_api_name=f"City1")
+    user_mock.return_value = OuterAPIPosition(
+        longitude=50, latitude=40, outer_api_name=f"City1"
+    )
     client = TestClient(app)
     return client
 
