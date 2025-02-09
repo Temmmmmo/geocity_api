@@ -33,3 +33,11 @@ class MissingParameters(BaseError):
             f"Missing parameter {param_name}",
             f"Параметр {param_name} отсутствует в запросе",
         )
+
+
+class InvalidParameters(BaseError):
+    def __init__(self, param_name: str):
+        super().__init__(
+            f"Invalid parameter {param_name}",
+            f"Параметр {param_name} не корректен",
+        )

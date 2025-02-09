@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 class City(BaseDbModel):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
+    outer_api_name: Mapped[str] = mapped_column(String, nullable=True)
     longitude: Mapped[Decimal] = mapped_column(DbDecimal, nullable=False)
     latitude: Mapped[Decimal] = mapped_column(DbDecimal, nullable=False)
     is_deleted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)

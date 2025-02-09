@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from backend.models.db import *
 from backend.routes import app
-from backend.schemas.models import Coordinates
+from backend.schemas.models import OuterAPIPosition
 from backend.settings import Settings
 
 
@@ -14,7 +14,7 @@ def client(mocker):
     user_mock = mocker.patch(
         "backend.utils.yandex_geocoder.YandexGeocoderAPI.get_coordinates"
     )
-    user_mock.return_value = Coordinates(longitude=50, latitude=40)
+    user_mock.return_value = OuterAPIPosition(longitude=50, latitude=40, outer_api_name=f"City1")
     client = TestClient(app)
     return client
 

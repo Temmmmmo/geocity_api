@@ -1,7 +1,8 @@
 import starlette.requests
 from starlette.responses import JSONResponse
 
-from backend.exceptions import AlreadyExists, MissingParameters, ObjectNotFound
+from backend.exceptions import (AlreadyExists, InvalidParameters,
+                                MissingParameters, ObjectNotFound)
 from backend.schemas.base import StatusResponseModel
 
 from .base import app
@@ -29,7 +30,19 @@ async def already_exists_handler(req: starlette.requests.Request, exc: AlreadyEx
 
 @app.exception_handler(MissingParameters)
 async def missing_parameter_handler(
-    req: starlette.requests.Request, exc: AlreadyExists
+    req: starlette.requests.Request, exc: MissingParameters
+):
+    return JSONResponse(
+        content=StatusResponseModel(
+            status="Error", message=exc.eng, ru=exc.ru
+        ).model_dump(),
+        status_code=400,
+    )
+
+
+@app.exception_handler(InvalidParameters)
+async def invalid_parameter_handler(
+    req: starlette.requests.Request, exc: InvalidParameters
 ):
     return JSONResponse(
         content=StatusResponseModel(
