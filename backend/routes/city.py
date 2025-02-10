@@ -119,7 +119,7 @@ async def get_cities(
         for city in cities:
             result.cities.append(CityGet.model_validate(city))
         logger.error(result)
-        result.cities = result.cities[offset:limit]
+        result.cities = result.cities[offset:offset+limit]
         result.total = len(result.cities)
         return result
     sorted_cities: list[City] = sorted(
@@ -136,7 +136,7 @@ async def get_cities(
                 distance=city.distance_to(longitude, latitude),
             )
         )
-    result.cities = result.cities[offset:limit]
+    result.cities = result.cities[offset:offset+limit]
     result.total = len(result.cities)
     return result
 
