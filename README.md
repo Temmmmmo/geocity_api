@@ -18,8 +18,8 @@
 1.  **Клонирование репозитория (если применимо):**
 
     ```
-    git clone <your_repository_url>
-    cd <your_repository_directory>
+    git clone https://github.com/Temmmmmo/geocity_api
+    cd geocity_api
     ```
 
 2.  **Создание и активация виртуального окружения:**
