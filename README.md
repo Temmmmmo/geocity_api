@@ -95,7 +95,7 @@
         {
             "id": 1,
             "name": "Москва",
-            "outer_api_name": "Москва",
+            "outer_api_name": "Moscow",
             "longitude": 37.617698,
             "latitude": 55.755826
         }
@@ -103,41 +103,55 @@
 
 *   **Получение списка городов:** `GET /city`
     ```
-    GET /city?limit={limit}&longitude={долгота}&latitude={широта}
+    GET /city?limit={limit}&offset={offset}&longitude={долгота}&latitude={широта}
     ```
-    *   Описание: Возвращает все города, имеющиеся в базе данных. Если указаны параметры `longitude` и `latitude`, возвращает `limit` ближайших городов к указанным координатам.
+    *   Описание: Возвращает список городов из базы данных. Может возвращать все города или указанное количество ближайших городов к заданным координатам.
     *   Query-параметры:
-        *   `limit` (integer, optional, default=2): Максимальное количество возвращаемых городов (должно быть больше или равно 1).
-        *   `longitude` (number, optional): Долгота (от -180 до 180). Должен быть указан вместе с `latitude`.
-        *   `latitude` (number, optional): Широта (от -90 до 90). Должен быть указан вместе с `longitude`.
-    *   Пример запроса (получение всех городов, `limit` по умолчанию):
+        *   `limit` (integer, optional, default=2): Максимальное количество возвращаемых городов (минимум 1).
+        *   `offset` (integer, optional, default=0): Смещение, относительно которого возвращаются города (минимум 0).
+        *   `longitude` (number, optional): Долгота для поиска ближайших городов (от -180 до 180). Должен быть указан вместе с `latitude`.
+        *   `latitude` (number, optional): Широта для поиска ближайших городов (от -90 до 90). Должен быть указан вместе с `longitude`.
+    *   Пример запроса (получение всех городов, `limit` и `offset` по умолчанию):
         ```
         GET /city
         ```
-    *   Пример запроса (получение ближайших городов с указанием координат и `limit`):
+    *   Пример запроса (получение ближайших городов с указанием координат, `limit` и `offset`):
         ```
-        GET /city?limit=3&longitude=30.3&latitude=60.0
+        GET /city?limit=3&offset=1&longitude=30.3&latitude=60.0
         ```
-    *   Пример успешного ответа (200 OK, получение ближайших городов):
+    *   Пример успешного ответа (200 OK, получение списка городов):
         ```
-        [
+        {
+          "limit": 3,
+          "offset": 1,
+          "total": 3,
+          "cities": [
             {
-                "id": 1,
-                "name": "Санкт-Петербург",
-                "outer_api_name": "Санкт-Петербург",
-                "longitude": 30.3,
-                "latitude": 60.0,
-                "distance": 0.0
+              "id": 2,
+              "name": "Москва",
+              "outer_api_name": "Moscow",
+              "longitude": 37.617698,
+              "latitude": 55.755826,
+              "distance": 634.467
             },
             {
-                "id": 2,
-                "name": "Москва",
-                "outer_api_name": "Moscow",
-                "longitude": 37.6,
-                "latitude": 55.7,
-                "distance": 634.5
+              "id": 3,
+              "name": "Тверь",
+              "outer_api_name": "Tver",
+              "longitude": 35.910198,
+              "latitude": 56.857796,
+              "distance": 706.956
+            },
+            {
+              "id": 4,
+              "name": "Великий Новгород",
+              "outer_api_name": "Veliky Novgorod",
+              "longitude": 31.275797,
+              "latitude": 58.523296,
+              "distance": 719.343
             }
-        ]
+          ]
+        }
         ```
 
 *   **Получение информации о городе по ID:** `GET /city/{city_id}`
