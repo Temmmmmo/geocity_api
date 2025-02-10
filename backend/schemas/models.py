@@ -23,6 +23,13 @@ class CityGet(Base):
     distance: Decimal | None = None
 
 
+class CityGetAll(Base):
+    cities: list[CityGet] = []
+    limit: int
+    offset: int
+    total: int = 0
+
+
 class CityPost(Base):
     id: int
     name: str

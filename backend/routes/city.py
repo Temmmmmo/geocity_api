@@ -15,7 +15,8 @@ from backend.exceptions import (AlreadyExists, InvalidParameters,
                                 MissingParameters, ObjectNotFound)
 from backend.models import City
 from backend.schemas.base import StatusResponseModel
-from backend.schemas.models import CityGet, CityPost, OuterAPIPosition
+from backend.schemas.models import (CityGet, CityGetAll, CityPost,
+                                    OuterAPIPosition)
 from backend.settings import Settings, get_settings
 from backend.utils.yandex_geocoder import YandexGeocoderAPI
 
@@ -79,7 +80,7 @@ async def create_city(
 
 @city.get(
     "",
-    response_model=list[CityGet],
+    response_model=CityGetAll,
     responses={
         400: {
             "model": StatusResponseModel,
@@ -89,36 +90,44 @@ async def create_city(
 )
 async def get_cities(
     limit: Annotated[int, Query(ge=1)] = 2,
+    offset: Annotated[int, Query(ge=0)] = 0,
     longitude: (
         Annotated[Optional[Decimal], Query(title="Долгота", ge=-180, le=180)] | None
     ) = None,
     latitude: (
         Annotated[Optional[Decimal], Query(title="Широта", ge=-90, le=90)] | None
     ) = None,
-) -> list[CityGet]:
+) -> CityGetAll:
     """
     Возвращает все города, имеющиеся в базе.
-    Если одновременно переданы query-параметры *longitude(Долгота)*, *latitude(Широта)*,
-    то вернется два ближайших к этим координатам города.
 
-    Параметр **limit** определяет верхнюю границу количества возвращаемых ближайших городов. По умолчанию **limit = 2**.
+    Если одновременно переданы query-параметры **longitude(Долгота)**, **latitude(Широта)**,
+    то вернется список отсортированных городов по возрастанию расстояния до данных координат.
+
+    Параметр **limit** определяет верхнюю границу количества возвращаемых городов. По умолчанию **limit = 2**.
+    Параметр **offset** определяет смещение, относительно которого будут возвращаться города.
     """
     if longitude is None and latitude is not None:
         raise MissingParameters("longitude")
     if latitude is None and longitude is not None:
         raise MissingParameters("latitude")
-    result: list[CityGet] = []
+    result: CityGetAll = CityGetAll(limit=limit, offset=offset)
+    logger.error(result)
     if longitude is None and latitude is None:
         cities: list[City] = City.query(session=db.session).all()
+        logger.error("fsafasf")
         for city in cities:
-            result.append(CityGet.model_validate(city))
+            result.cities.append(CityGet.model_validate(city))
+        logger.error(result)
+        result.cities = result.cities[offset:limit]
+        result.total = len(result.cities)
         return result
     sorted_cities: list[City] = sorted(
         City.query(session=db.session).all(),
         key=lambda item: item.distance_to(longitude, latitude),
     )
     for city in sorted_cities:
-        result.append(
+        result.cities.append(
             CityGet(
                 id=city.id,
                 name=city.name,
@@ -127,8 +136,8 @@ async def get_cities(
                 distance=city.distance_to(longitude, latitude),
             )
         )
-        if len(result) == limit:
-            break
+    result.cities = result.cities[offset:limit]
+    result.total = len(result.cities)
     return result
 
 
